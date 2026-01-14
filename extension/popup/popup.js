@@ -45,6 +45,14 @@ async function saveSettings() {
     return;
   }
 
+  // Prevent accidentally saving common messaging URLs as the API
+  if (apiEndpoint.includes('whatsapp.com') || 
+      apiEndpoint.includes('telegram.org') || 
+      apiEndpoint.includes('linkedin.com')) {
+    showStatus('Invalid API: Cannot use chat app URL as endpoint', 'error');
+    return;
+  }
+
   try {
     await setSelectedApps(selectedApps);
     await setApiEndpoint(apiEndpoint);
