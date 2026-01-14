@@ -92,7 +92,7 @@ function createTriggerButton(inputElement) {
 
   triggerButton = document.createElement('button');
   triggerButton.className = 'proseai-trigger-btn';
-  triggerButton.title = 'ProseAI - Rewrite with AI';
+  triggerButton.title = 'ProseAI - Click to rewrite | Drag to move';
   triggerButton.innerHTML = `
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor"/>
@@ -103,11 +103,52 @@ function createTriggerButton(inputElement) {
 
   triggerButton.style.display = 'none';
 
+  let isDragging = false;
+  let startX, startY;
+  let hasDragged = false;
+
   triggerButton.addEventListener('mousedown', (e) => {
+    // Only drag with left click
+    if (e.button !== 0) return;
+    
+    isDragging = true;
+    hasDragged = false;
+    startX = e.clientX - triggerButton.offsetLeft;
+    startY = e.clientY - triggerButton.offsetTop;
+    
+    // Disable transitions during drag for smoothness
+    triggerButton.style.transition = 'none';
+    
     e.preventDefault();
   });
 
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    
+    hasDragged = true;
+    const x = e.clientX - startX;
+    const y = e.clientY - startY;
+    
+    triggerButton.style.left = `${x}px`;
+    triggerButton.style.top = `${y}px`;
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    
+    isDragging = false;
+    // Re-enable transitions
+    triggerButton.style.transition = 'all 0.2s';
+  });
+
   triggerButton.addEventListener('click', (e) => {
+    // Don't open if we were just dragging
+    if (hasDragged) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
     e.preventDefault();
     e.stopPropagation();
     
@@ -121,8 +162,10 @@ function createTriggerButton(inputElement) {
   document.body.appendChild(triggerButton);
   positionTriggerButton(inputElement);
 
-  window.addEventListener('resize', () => positionTriggerButton(inputElement));
-  window.addEventListener('scroll', () => positionTriggerButton(inputElement));
+  window.addEventListener('resize', () => {
+    // Only auto-reposition if it's currently at its default position
+    // or if the window is resized. For now, let's just let it stay where it is.
+  });
 }
 
 function positionTriggerButton(inputElement) {
@@ -130,8 +173,9 @@ function positionTriggerButton(inputElement) {
 
   const rect = inputElement.getBoundingClientRect();
   
-  const top = rect.top + window.scrollY + (rect.height / 2) - 20;
-  const left = rect.right + window.scrollX + 10;
+  // Position above the input, aligned to the right side
+  const top = rect.top + window.scrollY - 45; // 40px height + 5px margin
+  const left = rect.right + window.scrollX - 40; // Aligned to right edge
 
   triggerButton.style.top = `${top}px`;
   triggerButton.style.left = `${left}px`;
