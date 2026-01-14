@@ -1,43 +1,5 @@
-/**
- * AI Service Module
- * Handles AI prompt engineering and API integration for text rewriting
- * Supports multiple AI providers: Google Gemini, OpenAI, and Anthropic Claude
- */
-
 import axios from 'axios';
 
-/**
- * Available tone options for text rewriting
- * @typedef {'professional' | 'friendly' | 'casual' | 'comedy' | 'polite' | 'confident'} ToneType
- */
-
-/**
- * Supported AI providers
- * @typedef {'gemini' | 'openai' | 'claude'} AIProvider
- */
-
-/**
- * AI rewrite request configuration
- * @typedef {Object} RewriteConfig
- * @property {string} text - The original text to rewrite
- * @property {ToneType} tone - The desired tone for rewriting
- * @property {AIProvider} [provider] - The AI provider to use (defaults to Gemini)
- * @property {string} [apiKey] - Optional API key override
- */
-
-/**
- * AI rewrite response
- * @typedef {Object} RewriteResponse
- * @property {boolean} success - Whether the rewrite was successful
- * @property {string} [rewrittenText] - The rewritten text (if successful)
- * @property {string} [error] - Error message (if failed)
- * @property {AIProvider} provider - The provider used
- */
-
-/**
- * Tone-specific prompt templates
- * Each tone has a carefully crafted system prompt to guide the AI
- */
 const TONE_PROMPTS = {
   professional: {
     system: "You are a professional writing assistant. Rewrite the given text in a formal, business-appropriate tone. Maintain clarity, use proper grammar, and ensure the message is polished and suitable for professional communication.",
@@ -65,12 +27,6 @@ const TONE_PROMPTS = {
   }
 };
 
-/**
- * Generates a complete prompt for the AI based on tone and text
- * @param {string} text - The original text to rewrite
- * @param {ToneType} tone - The desired tone
- * @returns {Object} Prompt configuration with system and user messages
- */
 function generatePrompt(text, tone) {
   const toneConfig = TONE_PROMPTS[tone] || TONE_PROMPTS.professional;
   
@@ -80,16 +36,8 @@ function generatePrompt(text, tone) {
   };
 }
 
-/**
- * Calls Google Gemini API for text rewriting
- * @param {string} text - The original text
- * @param {ToneType} tone - The desired tone
- * @param {string} apiKey - Gemini API key
- * @returns {Promise<string>} The rewritten text
- */
 async function callGeminiAPI(text, tone, apiKey) {
   const prompt = generatePrompt(text, tone);
-  // Use gemini-2.5-flash which is the latest fast model
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
   
   const requestBody = {
@@ -145,13 +93,6 @@ async function callGeminiAPI(text, tone, apiKey) {
   }
 }
 
-/**
- * Calls OpenAI API for text rewriting
- * @param {string} text - The original text
- * @param {ToneType} tone - The desired tone
- * @param {string} apiKey - OpenAI API key
- * @returns {Promise<string>} The rewritten text
- */
 async function callOpenAIAPI(text, tone, apiKey) {
   const prompt = generatePrompt(text, tone);
   const apiUrl = 'https://api.openai.com/v1/chat/completions';
@@ -188,13 +129,6 @@ async function callOpenAIAPI(text, tone, apiKey) {
   }
 }
 
-/**
- * Calls Anthropic Claude API for text rewriting
- * @param {string} text - The original text
- * @param {ToneType} tone - The desired tone
- * @param {string} apiKey - Claude API key
- * @returns {Promise<string>} The rewritten text
- */
 async function callClaudeAPI(text, tone, apiKey) {
   const prompt = generatePrompt(text, tone);
   const apiUrl = 'https://api.anthropic.com/v1/messages';
@@ -233,15 +167,7 @@ async function callClaudeAPI(text, tone, apiKey) {
   }
 }
 
-/**
- * Main function to rewrite text using AI
- * Automatically selects the appropriate AI provider based on available API keys
- * 
- * @param {RewriteConfig} config - Configuration for the rewrite request
- * @returns {Promise<RewriteResponse>} The rewrite response
- */
 export async function rewriteText({ text, tone, provider, apiKey }) {
-  // Validation
   if (!text || typeof text !== 'string' || text.trim().length === 0) {
     return {
       success: false,
@@ -258,12 +184,10 @@ export async function rewriteText({ text, tone, provider, apiKey }) {
     };
   }
 
-  // Determine which provider to use
   let selectedProvider = provider;
   let selectedApiKey = apiKey;
 
   if (!selectedProvider || !selectedApiKey) {
-    // Auto-detect provider based on environment variables
     if (process.env.GEMINI_API_KEY) {
       selectedProvider = 'gemini';
       selectedApiKey = process.env.GEMINI_API_KEY;
@@ -282,7 +206,6 @@ export async function rewriteText({ text, tone, provider, apiKey }) {
     }
   }
 
-  // Call the appropriate AI provider
   try {
     let rewrittenText;
 
@@ -319,42 +242,23 @@ export async function rewriteText({ text, tone, provider, apiKey }) {
   }
 }
 
-/**
- * Validates if the given text is in English
- * Simple heuristic-based validation
- * 
- * @param {string} text - The text to validate
- * @returns {boolean} True if text appears to be in English
- */
 export function isEnglishText(text) {
   if (!text || typeof text !== 'string') {
     return false;
   }
 
-  // Check if text contains mostly Latin characters
   const latinCharacters = text.match(/[a-zA-Z]/g);
   if (!latinCharacters) {
     return false;
   }
-
-  // At least 70% of characters should be Latin alphabet
   const latinRatio = latinCharacters.length / text.replace(/\s/g, '').length;
   return latinRatio >= 0.7;
 }
 
-/**
- * Gets all available tone options
- * @returns {ToneType[]} Array of available tones
- */
 export function getAvailableTones() {
   return Object.keys(TONE_PROMPTS);
 }
 
-/**
- * Gets the description for a specific tone
- * @param {ToneType} tone - The tone to get description for
- * @returns {string} The tone description
- */
 export function getToneDescription(tone) {
   const descriptions = {
     professional: 'Formal and business-appropriate',
@@ -368,5 +272,4 @@ export function getToneDescription(tone) {
   return descriptions[tone] || 'Unknown tone';
 }
 
-// Export tone prompts for testing or customization
 export { TONE_PROMPTS };
