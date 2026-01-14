@@ -76,29 +76,18 @@ export function setInputText(inputElement, text) {
     // Select everything
     document.execCommand('selectAll', false, null);
     
-    // Fire beforeinput
-    inputElement.dispatchEvent(new InputEvent('beforeinput', {
-      bubbles: true,
-      cancelable: true,
-      inputType: 'insertText',
-      data: text
-    }));
-
     // Insert the text (replaces selection)
+    // This command automatically clears the selection and inserts the new text
     const success = document.execCommand('insertText', false, text);
     
-    if (!success) {
+    // Fallback only if execCommand completely fails
+    if (!success || inputElement.innerText.trim() === '') {
       inputElement.innerText = text;
     }
 
-    // Fire input event
-    inputElement.dispatchEvent(new InputEvent('input', {
-      bubbles: true,
-      cancelable: true,
-      inputType: 'insertText',
-      data: text
-    }));
-    
+    // Fire a simple input event to notify WhatsApp/React to update the UI
+    // We don't include the 'data' here to prevent double-insertion
+    inputElement.dispatchEvent(new Event('input', { bubbles: true }));
     inputElement.dispatchEvent(new Event('change', { bubbles: true }));
   }
   
