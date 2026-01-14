@@ -68,30 +68,46 @@ export function setInputText(inputElement, text) {
   } else {
     // For contenteditable divs (WhatsApp, LinkedIn, etc.)
     
-    // Clear existing content first
+    // Focus first
+    inputElement.focus();
+    
+    // Method 1: Select all and delete
+    document.execCommand('selectAll', false, null);
+    document.execCommand('delete', false, null);
+    
+    // Method 2: Clear innerHTML
     inputElement.innerHTML = '';
     
-    // Create a text node with the new text
-    const textNode = document.createTextNode(text);
-    inputElement.appendChild(textNode);
+    // Method 3: Insert the new text
+    document.execCommand('insertText', false, text);
     
-    // Alternative: Set innerText (more reliable for some platforms)
-    inputElement.innerText = text;
+    // Fallback: Direct manipulation
+    if (inputElement.innerText !== text) {
+      inputElement.innerText = text;
+    }
     
-    // Dispatch multiple events to ensure the platform detects the change
-    inputElement.dispatchEvent(new Event('input', { bubbles: true }));
+    // Dispatch events
+    inputElement.dispatchEvent(new InputEvent('input', { 
+      bubbles: true, 
+      cancelable: true,
+      inputType: 'insertText',
+      data: text 
+    }));
+    
     inputElement.dispatchEvent(new Event('change', { bubbles: true }));
-    inputElement.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: text }));
-    inputElement.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
     inputElement.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
     
     // Move cursor to end
-    const range = document.createRange();
-    const selection = window.getSelection();
-    range.selectNodeContents(inputElement);
-    range.collapse(false);
-    selection.removeAllRanges();
-    selection.addRange(range);
+    try {
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.selectNodeContents(inputElement);
+      range.collapse(false);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } catch (e) {
+      console.log('ProseAI: Could not set cursor position', e);
+    }
   }
   
   inputElement.focus();
