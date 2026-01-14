@@ -61,6 +61,8 @@ export function getInputText(inputElement) {
 export function setInputText(inputElement, text) {
   if (!inputElement) return false;
   
+  console.log('ProseAI: Setting text to:', text.substring(0, 20) + '...');
+
   if (inputElement.tagName === 'TEXTAREA' || inputElement.tagName === 'INPUT') {
     inputElement.value = text;
     inputElement.dispatchEvent(new Event('input', { bubbles: true }));
@@ -69,31 +71,35 @@ export function setInputText(inputElement, text) {
     // For contenteditable divs (WhatsApp, LinkedIn, etc.)
     inputElement.focus();
     
-    // Select everything accurately
-    const range = document.createRange();
-    range.selectNodeContents(inputElement);
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
+    // Select everything
+    document.execCommand('selectAll', false, null);
     
-    // Insert new text (this automatically replaces the selection)
-    const inserted = document.execCommand('insertText', false, text);
+    // Use beforeinput event which React often listens for
+    const beforeInputEvent = new InputEvent('beforeinput', {
+      bubbles: true,
+      cancelable: true,
+      inputType: 'insertText',
+      data: text
+    });
+    inputElement.dispatchEvent(beforeInputEvent);
+
+    // Insert the text (replaces selection)
+    const success = document.execCommand('insertText', false, text);
     
-    // If execCommand failed, use direct manipulation as a silent fallback
-    if (!inserted || inputElement.innerText.trim() !== text.trim()) {
+    // If execCommand failed, fallback to direct manipulation
+    if (!success || inputElement.innerText.trim() !== text.trim()) {
       inputElement.innerText = text;
     }
+
+    // Crucial: Fire the input event so the "Send" button enables
+    inputElement.dispatchEvent(new InputEvent('input', {
+      bubbles: true,
+      cancelable: true,
+      inputType: 'insertText',
+      data: text
+    }));
     
-    // Dispatch events once
-    inputElement.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: true }));
     inputElement.dispatchEvent(new Event('change', { bubbles: true }));
-    
-    // Move cursor to the end
-    const finalRange = document.createRange();
-    finalRange.selectNodeContents(inputElement);
-    finalRange.collapse(false);
-    selection.removeAllRanges();
-    selection.addRange(finalRange);
   }
   
   return true;
