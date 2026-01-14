@@ -7,6 +7,12 @@ import {
   VALIDATION 
 } from '@/lib/types';
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -75,7 +81,7 @@ export async function POST(request) {
           provider: result.provider,
           timestamp: Date.now()
         },
-        { status: 200 }
+        { status: 200, headers: corsHeaders }
       );
     } else {
       return NextResponse.json(
@@ -120,7 +126,7 @@ export async function GET() {
       maxTextLength: VALIDATION.MAX_TEXT_LENGTH,
       timestamp: Date.now()
     },
-    { status: 200 }
+    { status: 200, headers: corsHeaders }
   );
 }
 
