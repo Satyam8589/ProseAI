@@ -12,7 +12,7 @@ export default function Hero() {
 
       <div className="container mx-auto px-4 md:px-8 relative z-10">
         {/* Hero Content */}
-        <div className="text-center max-w-4xl mx-auto mb-16 opacity-0 translate-y-8 animate-fade-in-up">
+        <div className="text-center max-w-4xl mx-auto mb-16 animate-fade-in-up">
           {/* Privacy Badge */}
           <div className="inline-flex items-center gap-2 px-6 py-3 mb-8 bg-purple-500/10 border border-purple-500/30 rounded-full text-purple-300 text-sm font-semibold animate-pulse-glow">
             <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +69,7 @@ export default function Hero() {
         </div>
 
         {/* Demo Visual */}
-        <div className="max-w-4xl mx-auto opacity-0 translate-y-8 animate-fade-in-up-delayed">
+        <div className="max-w-4xl mx-auto animate-fade-in-up-delayed">
           <div className="glass p-8 rounded-3xl">
             {/* Demo Header */}
             <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/10">
