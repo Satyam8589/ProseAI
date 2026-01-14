@@ -61,6 +61,9 @@ export function getInputText(inputElement) {
 export function setInputText(inputElement, text) {
   if (!inputElement) return false;
   
+  console.log('ProseAI: Setting text:', text);
+  console.log('ProseAI: Input element:', inputElement);
+  
   if (inputElement.tagName === 'TEXTAREA' || inputElement.tagName === 'INPUT') {
     inputElement.value = text;
     inputElement.dispatchEvent(new Event('input', { bubbles: true }));
@@ -79,14 +82,23 @@ export function setInputText(inputElement, text) {
     inputElement.innerHTML = '';
     
     // Method 3: Insert the new text
-    document.execCommand('insertText', false, text);
+    const inserted = document.execCommand('insertText', false, text);
+    console.log('ProseAI: execCommand insertText result:', inserted);
     
     // Fallback: Direct manipulation
     if (inputElement.innerText !== text) {
+      console.log('ProseAI: Using fallback innerText');
       inputElement.innerText = text;
     }
     
     // Dispatch events
+    inputElement.dispatchEvent(new InputEvent('beforeinput', {
+      bubbles: true,
+      cancelable: true,
+      inputType: 'insertText',
+      data: text
+    }));
+
     inputElement.dispatchEvent(new InputEvent('input', { 
       bubbles: true, 
       cancelable: true,
@@ -108,6 +120,8 @@ export function setInputText(inputElement, text) {
     } catch (e) {
       console.log('ProseAI: Could not set cursor position', e);
     }
+    
+    console.log('ProseAI: Final text in element:', inputElement.innerText);
   }
   
   inputElement.focus();

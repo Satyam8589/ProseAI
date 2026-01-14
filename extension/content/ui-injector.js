@@ -86,7 +86,22 @@ export class FloatingPanel {
       const result = await rewriteText(originalText, tone);
 
       if (result.success) {
-        setInputText(this.inputElement, result.rewrittenText);
+        // Try multiple times to ensure text is set (WhatsApp React can override)
+        const setText = () => {
+          setInputText(this.inputElement, result.rewrittenText);
+          
+          // Verify it worked
+          setTimeout(() => {
+            const currentText = getInputText(this.inputElement);
+            if (currentText !== result.rewrittenText) {
+              console.log('ProseAI: Text not set correctly, retrying...');
+              setInputText(this.inputElement, result.rewrittenText);
+            }
+          }, 100);
+        };
+        
+        setText();
+        
         this.showStatus('✓ Text rewritten!', 'success');
         await setLastUsedTone(tone);
         
