@@ -38,24 +38,8 @@ async function saveSettings() {
     return;
   }
 
-  const apiEndpoint = apiEndpointInput.value.trim();
-  
-  if (!apiEndpoint) {
-    showStatus('Please enter an API endpoint', 'error');
-    return;
-  }
-
-  // Prevent accidentally saving common messaging URLs as the API
-  if (apiEndpoint.includes('whatsapp.com') || 
-      apiEndpoint.includes('telegram.org') || 
-      apiEndpoint.includes('linkedin.com')) {
-    showStatus('Invalid API: Cannot use chat app URL as endpoint', 'error');
-    return;
-  }
-
   try {
     await setSelectedApps(selectedApps);
-    await setApiEndpoint(apiEndpoint);
 
     chrome.tabs.query({}, (tabs) => {
       tabs.forEach(tab => {

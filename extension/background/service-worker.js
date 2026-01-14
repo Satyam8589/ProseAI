@@ -4,7 +4,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === 'install') {
     console.log('ProseAI: Extension installed');
     
-    await setApiEndpoint('http://localhost:3000');
+    // Set production API endpoint
+    await setApiEndpoint('https://prose-ai-nine.vercel.app');
     
     const completed = await isOnboardingCompleted();
     if (!completed) {
@@ -14,6 +15,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     }
   } else if (details.reason === 'update') {
     console.log('ProseAI: Extension updated');
+    // Update API endpoint on extension update too
+    await setApiEndpoint('https://prose-ai-nine.vercel.app');
   }
 });
 
