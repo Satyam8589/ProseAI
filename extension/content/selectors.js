@@ -1,8 +1,8 @@
 export const SELECTORS = {
   whatsapp: {
-    messageInput: 'div[contenteditable="true"][role="textbox"]',
-    messageInputAlt: 'div[contenteditable="true"]',
-    chatContainer: '#main, [role="main"]',
+    messageInput: 'div[contenteditable="true"][data-tab="10"]',
+    messageInputAlt: 'div[contenteditable="true"][role="textbox"]',
+    chatContainer: '#main',
     sendButton: 'button[aria-label*="Send"]'
   },
   
@@ -65,25 +65,15 @@ export function getInputText(inputElement) {
 export function setInputText(inputElement, text) {
   if (!inputElement) return false;
   
-  console.log('ProseAI: Attempting to set text...');
-
-  // Always copy to clipboard as a fallback
-  try {
-    navigator.clipboard.writeText(text).then(() => {
-      console.log('ProseAI: Text also copied to clipboard (Ctrl+V ready)');
-    });
-  } catch (e) {
-    console.warn('ProseAI: Clipboard copy failed', e);
-  }
-
   if (inputElement.tagName === 'TEXTAREA' || inputElement.tagName === 'INPUT') {
     inputElement.value = text;
     inputElement.dispatchEvent(new Event('input', { bubbles: true }));
     inputElement.dispatchEvent(new Event('change', { bubbles: true }));
   } else {
+    // For contenteditable divs
     inputElement.focus();
     
-    // Select all
+    // Select everything
     document.execCommand('selectAll', false, null);
     
     // Fire beforeinput
@@ -94,10 +84,9 @@ export function setInputText(inputElement, text) {
       data: text
     }));
 
-    // Insert text
+    // Insert the text (replaces selection)
     const success = document.execCommand('insertText', false, text);
     
-    // Fallback if execCommand fails
     if (!success) {
       inputElement.innerText = text;
     }
