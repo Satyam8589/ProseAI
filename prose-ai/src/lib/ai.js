@@ -4,6 +4,8 @@
  * Supports multiple AI providers: Google Gemini, OpenAI, and Anthropic Claude
  */
 
+import axios from 'axios';
+
 /**
  * Available tone options for text rewriting
  * @typedef {'professional' | 'friendly' | 'casual' | 'comedy' | 'polite' | 'confident'} ToneType
@@ -123,20 +125,13 @@ async function callGeminiAPI(text, tone, apiKey) {
   };
 
   try {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
+    const response = await axios.post(apiUrl, requestBody, {
       headers: {
         'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody)
+      }
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error?.message || `Gemini API error: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = response.data;
     
     if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
       throw new Error('Invalid response format from Gemini API');
@@ -145,7 +140,8 @@ async function callGeminiAPI(text, tone, apiKey) {
     return data.candidates[0].content.parts[0].text.trim();
   } catch (error) {
     console.error('Gemini API Error:', error);
-    throw new Error(`Gemini API failed: ${error.message}`);
+    const errorMessage = error.response?.data?.error?.message || error.message;
+    throw new Error(`Gemini API failed: ${errorMessage}`);
   }
 }
 
@@ -171,21 +167,14 @@ async function callOpenAIAPI(text, tone, apiKey) {
   };
 
   try {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
+    const response = await axios.post(apiUrl, requestBody, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(requestBody)
+      }
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error?.message || `OpenAI API error: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = response.data;
     
     if (!data.choices || !data.choices[0]?.message?.content) {
       throw new Error('Invalid response format from OpenAI API');
@@ -194,7 +183,8 @@ async function callOpenAIAPI(text, tone, apiKey) {
     return data.choices[0].message.content.trim();
   } catch (error) {
     console.error('OpenAI API Error:', error);
-    throw new Error(`OpenAI API failed: ${error.message}`);
+    const errorMessage = error.response?.data?.error?.message || error.message;
+    throw new Error(`OpenAI API failed: ${errorMessage}`);
   }
 }
 
@@ -221,22 +211,15 @@ async function callClaudeAPI(text, tone, apiKey) {
   };
 
   try {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
+    const response = await axios.post(apiUrl, requestBody, {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify(requestBody)
+      }
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error?.message || `Claude API error: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = response.data;
     
     if (!data.content || !data.content[0]?.text) {
       throw new Error('Invalid response format from Claude API');
@@ -245,7 +228,8 @@ async function callClaudeAPI(text, tone, apiKey) {
     return data.content[0].text.trim();
   } catch (error) {
     console.error('Claude API Error:', error);
-    throw new Error(`Claude API failed: ${error.message}`);
+    const errorMessage = error.response?.data?.error?.message || error.message;
+    throw new Error(`Claude API failed: ${errorMessage}`);
   }
 }
 
