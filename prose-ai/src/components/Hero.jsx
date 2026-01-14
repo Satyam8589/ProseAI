@@ -37,13 +37,23 @@ export default function Hero() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <button className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/50 hover:shadow-purple-500/70 hover:-translate-y-1 transition-all duration-300">
+            <button 
+              onClick={() => {
+                alert('📦 Installation Instructions:\n\n1. Open Chrome and go to chrome://extensions/\n2. Enable "Developer mode" (top right)\n3. Click "Load unpacked"\n4. Select the folder: d:\\ProseAI\\prose-ai\\extension\n5. Done! The extension is now installed.\n\n✨ Then open WhatsApp, Telegram, or LinkedIn to use ProseAI!');
+              }}
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/50 hover:shadow-purple-500/70 hover:-translate-y-1 transition-all duration-300"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
               </svg>
               Install Extension
             </button>
-            <button className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent border-2 border-purple-500 text-white font-semibold rounded-xl hover:bg-purple-500 hover:-translate-y-1 transition-all duration-300">
+            <button 
+              onClick={() => {
+                document.querySelector('.glass')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }}
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent border-2 border-purple-500 text-white font-semibold rounded-xl hover:bg-purple-500 hover:-translate-y-1 transition-all duration-300"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <polygon strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} points="5 3 19 12 5 21 5 3" />
               </svg>

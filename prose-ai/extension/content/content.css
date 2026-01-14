@@ -1,0 +1,170 @@
+.proseai-floating-panel {
+  position: absolute;
+  z-index: 999999;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 0;
+  width: 360px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.proseai-floating-panel.proseai-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.proseai-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.proseai-logo {
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.proseai-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.proseai-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.proseai-content {
+  padding: 20px;
+}
+
+.proseai-tones {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.proseai-tone-btn {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.proseai-tone-btn:hover {
+  background: white;
+  border-color: var(--tone-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.proseai-tone-btn:active {
+  transform: translateY(0);
+}
+
+.tone-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.tone-label {
+  flex: 1;
+  text-align: left;
+}
+
+.proseai-status {
+  min-height: 24px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.proseai-status-loading {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.proseai-status-success {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.proseai-status-error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.proseai-trigger-btn {
+  position: absolute;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  transition: all 0.2s;
+  z-index: 999998;
+}
+
+.proseai-trigger-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+}
+
+.proseai-trigger-btn:active {
+  transform: scale(0.95);
+}
+
+.proseai-trigger-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
