@@ -61,69 +61,40 @@ export function getInputText(inputElement) {
 export function setInputText(inputElement, text) {
   if (!inputElement) return false;
   
-  console.log('ProseAI: Setting text:', text);
-  console.log('ProseAI: Input element:', inputElement);
-  
   if (inputElement.tagName === 'TEXTAREA' || inputElement.tagName === 'INPUT') {
     inputElement.value = text;
     inputElement.dispatchEvent(new Event('input', { bubbles: true }));
     inputElement.dispatchEvent(new Event('change', { bubbles: true }));
   } else {
     // For contenteditable divs (WhatsApp, LinkedIn, etc.)
-    
-    // Focus first
     inputElement.focus();
     
-    // Method 1: Select all and delete
-    document.execCommand('selectAll', false, null);
-    document.execCommand('delete', false, null);
+    // Select everything accurately
+    const range = document.createRange();
+    range.selectNodeContents(inputElement);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
     
-    // Method 2: Clear innerHTML
-    inputElement.innerHTML = '';
-    
-    // Method 3: Insert the new text
+    // Insert new text (this automatically replaces the selection)
     const inserted = document.execCommand('insertText', false, text);
-    console.log('ProseAI: execCommand insertText result:', inserted);
     
-    // Fallback: Direct manipulation
-    if (inputElement.innerText !== text) {
-      console.log('ProseAI: Using fallback innerText');
+    // If execCommand failed, use direct manipulation as a silent fallback
+    if (!inserted || inputElement.innerText.trim() !== text.trim()) {
       inputElement.innerText = text;
     }
     
-    // Dispatch events
-    inputElement.dispatchEvent(new InputEvent('beforeinput', {
-      bubbles: true,
-      cancelable: true,
-      inputType: 'insertText',
-      data: text
-    }));
-
-    inputElement.dispatchEvent(new InputEvent('input', { 
-      bubbles: true, 
-      cancelable: true,
-      inputType: 'insertText',
-      data: text 
-    }));
-    
+    // Dispatch events once
+    inputElement.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: true }));
     inputElement.dispatchEvent(new Event('change', { bubbles: true }));
-    inputElement.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
     
-    // Move cursor to end
-    try {
-      const range = document.createRange();
-      const selection = window.getSelection();
-      range.selectNodeContents(inputElement);
-      range.collapse(false);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    } catch (e) {
-      console.log('ProseAI: Could not set cursor position', e);
-    }
-    
-    console.log('ProseAI: Final text in element:', inputElement.innerText);
+    // Move cursor to the end
+    const finalRange = document.createRange();
+    finalRange.selectNodeContents(inputElement);
+    finalRange.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(finalRange);
   }
   
-  inputElement.focus();
   return true;
 }
