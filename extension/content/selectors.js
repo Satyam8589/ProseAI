@@ -1,8 +1,8 @@
 export const SELECTORS = {
   whatsapp: {
-    messageInput: 'div[contenteditable="true"][data-tab="10"]',
-    messageInputAlt: 'div[contenteditable="true"][role="textbox"]',
-    chatContainer: '#main',
+    messageInput: 'div[contenteditable="true"][role="textbox"]',
+    messageInputAlt: 'div[contenteditable="true"]',
+    chatContainer: '#main, [role="main"]',
     sendButton: 'button[aria-label*="Send"]'
   },
   
@@ -39,10 +39,14 @@ export function getMessageInput(platform) {
   const selectors = SELECTORS[platform];
   if (!selectors) return null;
 
+  // Try the primary selector first
   let input = document.querySelector(selectors.messageInput);
   
-  if (!input && selectors.messageInputAlt) {
-    input = document.querySelector(selectors.messageInputAlt);
+  // If not found, look for ANY contenteditable if it's WhatsApp
+  if (!input && platform === 'whatsapp') {
+    const editables = document.querySelectorAll('div[contenteditable="true"]');
+    // The main message box usually has more siblings/children than just a simple box
+    input = Array.from(editables).find(el => el.innerText.length >= 0);
   }
   
   return input;
@@ -61,37 +65,44 @@ export function getInputText(inputElement) {
 export function setInputText(inputElement, text) {
   if (!inputElement) return false;
   
-  console.log('ProseAI: Setting text to:', text.substring(0, 20) + '...');
+  console.log('ProseAI: Attempting to set text...');
+
+  // Always copy to clipboard as a fallback
+  try {
+    navigator.clipboard.writeText(text).then(() => {
+      console.log('ProseAI: Text also copied to clipboard (Ctrl+V ready)');
+    });
+  } catch (e) {
+    console.warn('ProseAI: Clipboard copy failed', e);
+  }
 
   if (inputElement.tagName === 'TEXTAREA' || inputElement.tagName === 'INPUT') {
     inputElement.value = text;
     inputElement.dispatchEvent(new Event('input', { bubbles: true }));
     inputElement.dispatchEvent(new Event('change', { bubbles: true }));
   } else {
-    // For contenteditable divs (WhatsApp, LinkedIn, etc.)
     inputElement.focus();
     
-    // Select everything
+    // Select all
     document.execCommand('selectAll', false, null);
     
-    // Use beforeinput event which React often listens for
-    const beforeInputEvent = new InputEvent('beforeinput', {
+    // Fire beforeinput
+    inputElement.dispatchEvent(new InputEvent('beforeinput', {
       bubbles: true,
       cancelable: true,
       inputType: 'insertText',
       data: text
-    });
-    inputElement.dispatchEvent(beforeInputEvent);
+    }));
 
-    // Insert the text (replaces selection)
+    // Insert text
     const success = document.execCommand('insertText', false, text);
     
-    // If execCommand failed, fallback to direct manipulation
-    if (!success || inputElement.innerText.trim() !== text.trim()) {
+    // Fallback if execCommand fails
+    if (!success) {
       inputElement.innerText = text;
     }
 
-    // Crucial: Fire the input event so the "Send" button enables
+    // Fire input event
     inputElement.dispatchEvent(new InputEvent('input', {
       bubbles: true,
       cancelable: true,
