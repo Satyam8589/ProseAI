@@ -68,7 +68,7 @@ export async function setLastUsedTone(tone) {
 
 export async function getApiEndpoint() {
   const result = await storage.get(STORAGE_KEYS.API_ENDPOINT);
-  return result[STORAGE_KEYS.API_ENDPOINT] || 'http://localhost:3000';
+  return result[STORAGE_KEYS.API_ENDPOINT] || 'https://prose-ai-nine.vercel.app';
 }
 
 export async function setApiEndpoint(endpoint) {

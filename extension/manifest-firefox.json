@@ -16,7 +16,7 @@
     "https://web.whatsapp.com/*",
     "https://web.telegram.org/*",
     "https://*.linkedin.com/*",
-    "http://localhost:3000/*"
+    "https://prose-ai-nine.vercel.app/*"
   ],
   "background": {
     "service_worker": "background/service-worker.js",
