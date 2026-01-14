@@ -1,66 +1,3 @@
-/**
- * Type Definitions and Constants for ProseAI
- * Provides JSDoc type annotations and shared constants across the application
- */
-
-/**
- * Available tone options for text rewriting
- * @typedef {'professional' | 'friendly' | 'casual' | 'comedy' | 'polite' | 'confident'} ToneType
- */
-
-/**
- * Supported AI providers
- * @typedef {'gemini' | 'openai' | 'claude'} AIProvider
- */
-
-/**
- * AI rewrite request configuration
- * @typedef {Object} RewriteConfig
- * @property {string} text - The original text to rewrite
- * @property {ToneType} tone - The desired tone for rewriting
- * @property {AIProvider} [provider] - The AI provider to use (defaults to auto-detect)
- * @property {string} [apiKey] - Optional API key override
- */
-
-/**
- * AI rewrite response
- * @typedef {Object} RewriteResponse
- * @property {boolean} success - Whether the rewrite was successful
- * @property {string} [rewrittenText] - The rewritten text (if successful)
- * @property {string} [error] - Error message (if failed)
- * @property {AIProvider} provider - The provider used
- */
-
-/**
- * Extension storage data structure
- * @typedef {Object} ExtensionStorage
- * @property {boolean} onboardingCompleted - Whether user has completed onboarding
- * @property {string[]} selectedApps - Array of selected app identifiers
- * @property {ToneType} [lastUsedTone] - Last tone used by the user
- * @property {AIProvider} [preferredProvider] - User's preferred AI provider
- */
-
-/**
- * Message from extension to API
- * @typedef {Object} ExtensionMessage
- * @property {string} type - Message type identifier
- * @property {string} text - Text to rewrite
- * @property {ToneType} tone - Desired tone
- * @property {string} [tabId] - Browser tab ID
- */
-
-/**
- * API response to extension
- * @typedef {Object} APIResponse
- * @property {boolean} success - Whether the request was successful
- * @property {string} [rewrittenText] - The rewritten text
- * @property {string} [error] - Error message if failed
- * @property {number} timestamp - Response timestamp
- */
-
-/**
- * Supported web applications
- */
 export const SUPPORTED_APPS = {
   WHATSAPP: {
     id: 'whatsapp',
@@ -85,9 +22,6 @@ export const SUPPORTED_APPS = {
   }
 };
 
-/**
- * Tone configurations with metadata
- */
 export const TONE_CONFIGS = {
   professional: {
     id: 'professional',
@@ -133,9 +67,6 @@ export const TONE_CONFIGS = {
   }
 };
 
-/**
- * AI Provider configurations
- */
 export const AI_PROVIDERS = {
   GEMINI: {
     id: 'gemini',
@@ -157,9 +88,6 @@ export const AI_PROVIDERS = {
   }
 };
 
-/**
- * Extension message types
- */
 export const MESSAGE_TYPES = {
   REWRITE_REQUEST: 'rewrite_request',
   REWRITE_RESPONSE: 'rewrite_response',
@@ -168,9 +96,6 @@ export const MESSAGE_TYPES = {
   PONG: 'pong'
 };
 
-/**
- * Storage keys for chrome.storage
- */
 export const STORAGE_KEYS = {
   ONBOARDING_COMPLETED: 'onboardingCompleted',
   SELECTED_APPS: 'selectedApps',
@@ -179,26 +104,17 @@ export const STORAGE_KEYS = {
   USER_PREFERENCES: 'userPreferences'
 };
 
-/**
- * API endpoints
- */
 export const API_ENDPOINTS = {
   REWRITE: '/api/rewrite',
   HEALTH: '/api/health'
 };
 
-/**
- * Validation constants
- */
 export const VALIDATION = {
   MIN_TEXT_LENGTH: 1,
   MAX_TEXT_LENGTH: 5000,
   MIN_ENGLISH_RATIO: 0.7
 };
 
-/**
- * Error messages
- */
 export const ERROR_MESSAGES = {
   NO_TEXT: 'Please enter some text to rewrite',
   TEXT_TOO_SHORT: 'Text is too short to rewrite',
@@ -211,18 +127,12 @@ export const ERROR_MESSAGES = {
   UNKNOWN_ERROR: 'An unexpected error occurred'
 };
 
-/**
- * Success messages
- */
 export const SUCCESS_MESSAGES = {
   TEXT_REWRITTEN: 'Text rewritten successfully',
   SETTINGS_SAVED: 'Settings saved successfully',
   ONBOARDING_COMPLETED: 'Setup completed successfully'
 };
 
-/**
- * UI Constants
- */
 export const UI_CONSTANTS = {
   FLOATING_PANEL_ID: 'proseai-floating-panel',
   FLOATING_PANEL_CLASS: 'proseai-panel',
@@ -232,9 +142,6 @@ export const UI_CONSTANTS = {
   SUCCESS_CLASS: 'proseai-success'
 };
 
-/**
- * Animation durations (in milliseconds)
- */
 export const ANIMATION_DURATIONS = {
   FADE_IN: 200,
   FADE_OUT: 150,
@@ -243,75 +150,38 @@ export const ANIMATION_DURATIONS = {
   BUTTON_HOVER: 100
 };
 
-/**
- * Z-index values for UI layers
- */
 export const Z_INDEX = {
   FLOATING_PANEL: 999999,
   MODAL: 1000000,
   TOOLTIP: 1000001
 };
 
-/**
- * Validates a tone type
- * @param {string} tone - The tone to validate
- * @returns {boolean} True if valid
- */
 export function isValidTone(tone) {
   return Object.keys(TONE_CONFIGS).includes(tone);
 }
 
-/**
- * Validates an AI provider
- * @param {string} provider - The provider to validate
- * @returns {boolean} True if valid
- */
 export function isValidProvider(provider) {
   return Object.values(AI_PROVIDERS).some(p => p.id === provider);
 }
 
-/**
- * Validates text length
- * @param {string} text - The text to validate
- * @returns {boolean} True if valid
- */
 export function isValidTextLength(text) {
   if (!text || typeof text !== 'string') return false;
   const length = text.trim().length;
   return length >= VALIDATION.MIN_TEXT_LENGTH && length <= VALIDATION.MAX_TEXT_LENGTH;
 }
 
-/**
- * Gets a tone config by ID
- * @param {ToneType} toneId - The tone ID
- * @returns {Object|null} The tone config or null
- */
 export function getToneConfig(toneId) {
   return TONE_CONFIGS[toneId] || null;
 }
 
-/**
- * Gets all tone IDs
- * @returns {ToneType[]} Array of tone IDs
- */
 export function getAllToneIds() {
   return Object.keys(TONE_CONFIGS);
 }
 
-/**
- * Gets a supported app by ID
- * @param {string} appId - The app ID
- * @returns {Object|null} The app config or null
- */
 export function getSupportedApp(appId) {
   return Object.values(SUPPORTED_APPS).find(app => app.id === appId) || null;
 }
 
-/**
- * Checks if a URL matches a supported app
- * @param {string} url - The URL to check
- * @returns {Object|null} The matching app config or null
- */
 export function getAppFromUrl(url) {
   if (!url) return null;
   

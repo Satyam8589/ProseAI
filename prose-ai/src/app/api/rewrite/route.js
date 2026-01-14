@@ -1,8 +1,3 @@
-/**
- * API Route: /api/rewrite
- * Handles text rewriting requests from the browser extension
- */
-
 import { NextResponse } from 'next/server';
 import { rewriteText, isEnglishText } from '@/lib/ai';
 import { 
@@ -12,33 +7,11 @@ import {
   VALIDATION 
 } from '@/lib/types';
 
-/**
- * POST /api/rewrite
- * Rewrites text in the specified tone using AI
- * 
- * Request body:
- * {
- *   text: string,
- *   tone: ToneType,
- *   provider?: AIProvider
- * }
- * 
- * Response:
- * {
- *   success: boolean,
- *   rewrittenText?: string,
- *   error?: string,
- *   provider: string,
- *   timestamp: number
- * }
- */
 export async function POST(request) {
   try {
-    // Parse request body
     const body = await request.json();
     const { text, tone, provider } = body;
 
-    // Validate request
     if (!text || typeof text !== 'string') {
       return NextResponse.json(
         {
@@ -50,7 +23,6 @@ export async function POST(request) {
       );
     }
 
-    // Validate text length
     if (!isValidTextLength(text)) {
       const trimmedLength = text.trim().length;
       const error = trimmedLength < VALIDATION.MIN_TEXT_LENGTH 
@@ -67,7 +39,6 @@ export async function POST(request) {
       );
     }
 
-    // Validate English text
     if (!isEnglishText(text)) {
       return NextResponse.json(
         {
@@ -79,7 +50,6 @@ export async function POST(request) {
       );
     }
 
-    // Validate tone
     if (!tone || !isValidTone(tone)) {
       return NextResponse.json(
         {
@@ -91,14 +61,12 @@ export async function POST(request) {
       );
     }
 
-    // Call AI service to rewrite text
     const result = await rewriteText({
       text: text.trim(),
       tone,
       provider
     });
 
-    // Return response
     if (result.success) {
       return NextResponse.json(
         {
@@ -135,10 +103,6 @@ export async function POST(request) {
   }
 }
 
-/**
- * GET /api/rewrite
- * Returns API information and available tones
- */
 export async function GET() {
   return NextResponse.json(
     {
@@ -160,10 +124,6 @@ export async function GET() {
   );
 }
 
-/**
- * OPTIONS /api/rewrite
- * CORS preflight handler
- */
 export async function OPTIONS() {
   return NextResponse.json(
     {},
