@@ -66,13 +66,32 @@ export function setInputText(inputElement, text) {
     inputElement.dispatchEvent(new Event('input', { bubbles: true }));
     inputElement.dispatchEvent(new Event('change', { bubbles: true }));
   } else {
-    inputElement.innerText = text;
-    inputElement.textContent = text;
+    // For contenteditable divs (WhatsApp, LinkedIn, etc.)
     
+    // Clear existing content first
+    inputElement.innerHTML = '';
+    
+    // Create a text node with the new text
+    const textNode = document.createTextNode(text);
+    inputElement.appendChild(textNode);
+    
+    // Alternative: Set innerText (more reliable for some platforms)
+    inputElement.innerText = text;
+    
+    // Dispatch multiple events to ensure the platform detects the change
     inputElement.dispatchEvent(new Event('input', { bubbles: true }));
     inputElement.dispatchEvent(new Event('change', { bubbles: true }));
+    inputElement.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: text }));
     inputElement.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
     inputElement.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
+    
+    // Move cursor to end
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(inputElement);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
   }
   
   inputElement.focus();
