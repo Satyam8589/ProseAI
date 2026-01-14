@@ -25,7 +25,7 @@ export async function POST(request) {
           error: ERROR_MESSAGES.NO_TEXT,
           timestamp: Date.now()
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -41,7 +41,7 @@ export async function POST(request) {
           error,
           timestamp: Date.now()
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -52,7 +52,7 @@ export async function POST(request) {
           error: ERROR_MESSAGES.NOT_ENGLISH,
           timestamp: Date.now()
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -63,7 +63,7 @@ export async function POST(request) {
           error: ERROR_MESSAGES.INVALID_TONE,
           timestamp: Date.now()
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -91,7 +91,7 @@ export async function POST(request) {
           provider: result.provider,
           timestamp: Date.now()
         },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       );
     }
 
@@ -104,7 +104,7 @@ export async function POST(request) {
         error: ERROR_MESSAGES.UNKNOWN_ERROR,
         timestamp: Date.now()
       },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
