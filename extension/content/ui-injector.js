@@ -59,6 +59,8 @@ export class FloatingPanel {
 
     const toneButtons = this.panel.querySelectorAll('.proseai-tone-btn');
     toneButtons.forEach(btn => {
+      // Prevent focus loss so selection is preserved
+      btn.addEventListener('mousedown', (e) => e.preventDefault());
       btn.addEventListener('click', () => this.handleToneClick(btn.dataset.tone));
     });
 
@@ -72,10 +74,19 @@ export class FloatingPanel {
   async handleToneClick(tone) {
     if (this.isProcessing) return;
 
-    const originalText = getInputText(this.inputElement);
+    // Get selected text first
+    let selectedText = window.getSelection().toString().trim();
+    let textToProcess = selectedText;
+    let isFullReplacement = false;
+
+    // If no selection, get full text
+    if (!textToProcess) {
+      textToProcess = getInputText(this.inputElement);
+      isFullReplacement = true;
+    }
     
-    if (!originalText || originalText.trim().length === 0) {
-      this.showStatus('Please enter some text first', 'error');
+    if (!textToProcess || textToProcess.length === 0) {
+      this.showStatus('Please type or select text first', 'error');
       return;
     }
 
@@ -83,11 +94,11 @@ export class FloatingPanel {
     this.showStatus('Rewriting...', 'loading');
 
     try {
-      const result = await rewriteText(originalText, tone);
+      const result = await rewriteText(textToProcess, tone);
 
       if (result.success) {
-        // Set the text once correctly
-        setInputText(this.inputElement, result.rewrittenText);
+        // Set the text, telling it if it should replace the whole box or just the selection
+        setInputText(this.inputElement, result.rewrittenText, isFullReplacement);
         
         this.showStatus('✓ Text rewritten!', 'success');
         await setLastUsedTone(tone);

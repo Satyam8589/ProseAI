@@ -103,6 +103,10 @@ function createTriggerButton(inputElement) {
 
   triggerButton.style.display = 'none';
 
+  triggerButton.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+  });
+
   triggerButton.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();

@@ -62,31 +62,42 @@ export function getInputText(inputElement) {
   return inputElement.innerText || inputElement.textContent || '';
 }
 
-export function setInputText(inputElement, text) {
+export function setInputText(inputElement, text, isFullReplacement = true) {
   if (!inputElement) return false;
   
   if (inputElement.tagName === 'TEXTAREA' || inputElement.tagName === 'INPUT') {
-    inputElement.value = text;
+    if (isFullReplacement) {
+      inputElement.value = text;
+    } else {
+      // For partial replacement in textarea/input
+      const start = inputElement.selectionStart;
+      const end = inputElement.selectionEnd;
+      const value = inputElement.value;
+      inputElement.value = value.substring(0, start) + text + value.substring(end);
+      inputElement.selectionStart = inputElement.selectionEnd = start + text.length;
+    }
     inputElement.dispatchEvent(new Event('input', { bubbles: true }));
     inputElement.dispatchEvent(new Event('change', { bubbles: true }));
   } else {
     // For contenteditable divs
     inputElement.focus();
     
-    // Select everything
-    document.execCommand('selectAll', false, null);
+    // Only select everything if we want to replace the whole box
+    if (isFullReplacement) {
+      document.execCommand('selectAll', false, null);
+    }
     
     // Insert the text (replaces selection)
-    // This command automatically clears the selection and inserts the new text
     const success = document.execCommand('insertText', false, text);
     
     // Fallback only if execCommand completely fails
-    if (!success || inputElement.innerText.trim() === '') {
-      inputElement.innerText = text;
+    if (!success || (isFullReplacement && inputElement.innerText.trim() === '')) {
+      if (isFullReplacement) {
+        inputElement.innerText = text;
+      }
     }
 
-    // Fire a simple input event to notify WhatsApp/React to update the UI
-    // We don't include the 'data' here to prevent double-insertion
+    // Fire events to notify the platform
     inputElement.dispatchEvent(new Event('input', { bubbles: true }));
     inputElement.dispatchEvent(new Event('change', { bubbles: true }));
   }
